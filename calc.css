@@ -1,0 +1,47 @@
+body{
+    background-image: url(images/templ.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: fixed;
+}
+.all{
+    margin-left: 11cm;
+    margin-right: 11cm;
+    margin-top: 2cm;
+    border-radius: 10px;
+    background-image: url(images/clg.jpg);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.main-container{
+    display: flex;
+    flex-flow: row;
+}
+#operators-container{
+    align-content: flex-start;
+}
+#operators-container button{
+    background-color: teal;
+}
+.flex-container{
+    display: flex;
+    flex-flow: row wrap;
+}
+.flex-container button{
+    margin: 5px;
+    width: 2cm;
+    height: 1cm;
+    border-radius: 10px;
+    background-color: transparent;
+    border-color: black;
+}
+textarea{
+    font-size: large;
+    margin: 1px;
+    color: white    ;
+    border-style: none;
+    padding: 28px;
+    background-color: black;
+    border-radius: 5px;
+}
