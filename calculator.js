@@ -104,6 +104,9 @@ numberButtons.forEach(numberButton => {
     });
 });
 
+let result = 0;
+let calculator = defaultCalculator();
+
 let textArea = document.querySelector("textarea");
 function clickNumberButton(content) {
     let value = content;
@@ -114,12 +117,19 @@ function clickNumberButton(content) {
     textArea.textContent += value;
 }
 
-let result = 0;
-let calculator = defaultCalculator();
+function evaluateSecondValue() {
+    let noIndex = textArea.textContent.lastIndexOf(calculator.secondValue);
+    if (textArea.textContent[noIndex-2] === "-" && 
+                textArea.textContent[noIndex-4] == "-" ||
+                textArea.textContent[noIndex-4] == "x" ||
+                textArea.textContent[noIndex-4] == "÷") {
+        calculator.secondValue = "-"+calculator.secondValue;
+    }    
+}
+
 function clickOperatorButton(content) {
     let value = content;
     if (value === "Clear") {
-        textArea.textContent += " ";
         textArea.textContent = null;
         calculator = defaultCalculator();
     }else if(value === "←" || value === "Backspace"){
@@ -138,12 +148,13 @@ function clickOperatorButton(content) {
         let prevIndex = textArea.textContent.lastIndexOf(calculator.operator);
         let valueIndex = textArea.textContent.indexOf(value);
         calculator.secondValue = Number(textArea.textContent.substring((prevIndex+2),(valueIndex-1)));
+        evaluateSecondValue();
         if (calculator.transientValue !== 0) {
            result = operate(calculator.transientOperator,calculator.transientValue,
-                    operate(calculator.operator,calculator.primaryFirstValue,
+                    operate(calculator.operator,Math.abs(calculator.primaryFirstValue),
                             calculator.secondValue));
         }else{
-            result = operate(calculator.operator,calculator.primaryFirstValue,calculator.secondValue);
+            result = operate(calculator.primaryOperator,calculator.primaryFirstValue,calculator.secondValue);
         }
         if (isNaN(result) ) {
             textArea.textContent = "ERROR";
@@ -176,19 +187,23 @@ function clickOperatorButton(content) {
                     break;        
                 default:
                     calculator.secondValue = Number(textArea.textContent.substring((prevIndex+2),(valueIndex-1)));
+                    evaluateSecondValue();
                     if (textArea.textContent[prevIndex] === "÷" || textArea.textContent[prevIndex] === "x") {
-                        let initial = operate(calculator.operator,
-                                    calculator.primaryFirstValue,calculator.secondValue);
-                        if (calculator.transientValue !== 0) {
-                            calculator.firstValue = operate(calculator.transientOperator,
-                                        calculator.transientValue,initial);                        
+                        if (calculator.secondValue === 0) {;
                         }else{
-                            calculator.firstValue = initial;
+                            let initial = operate(calculator.operator,
+                                        calculator.primaryFirstValue,calculator.secondValue);
+                            if (calculator.transientValue !== 0) {
+                                calculator.firstValue = operate(calculator.transientOperator,
+                                            calculator.transientValue,initial);                        
+                            }else{
+                                calculator.firstValue = initial;
+                            }
+                            calculator.primaryFirstValue = calculator.firstValue;
+                            calculator.primaryOperator = value;
+                            calculator.transientOperator = null;
+                            calculator.transientValue = 0;
                         }
-                        calculator.primaryFirstValue = calculator.firstValue;
-                        calculator.primaryOperator = value;
-                        calculator.transientOperator = null;
-                        calculator.transientValue = 0;
                     } else{
                         if (value === "+" || value === "-") {
                            calculator.firstValue = 
@@ -206,7 +221,7 @@ function clickOperatorButton(content) {
                     break;
             }            
         }
-        calculator.operator = value;    
+        calculator.operator = value;
     }
 }
 
